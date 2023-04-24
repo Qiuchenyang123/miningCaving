@@ -1,0 +1,35 @@
+{
+  "name": "ly_miningcave",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
+    "echarts": "^5.4.2",
+    "element-plus": "^2.3.3",
+    "gsap": "^3.11.5",
+    "leaflet": "^1.9.3",
+    "ly_three": "^0.0.9",
+    "mitt": "^3.0.0",
+    "moment": "^2.29.4",
+    "pinia": "^2.0.32",
+    "proj4leaflet": "^1.0.2",
+    "three": "^0.151.3",
+    "vue": "^3.2.47",
+    "vue-router": "^4.1.6"
+  },
+  "devDependencies": {
+    "@rushstack/eslint-patch": "^1.2.0",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "eslint": "^8.34.0",
+    "eslint-plugin-vue": "^9.9.0",
+    "less": "^4.1.3",
+    "less-loader": "^11.1.0",
+    "vite": "^4.1.4"
+  }
+}

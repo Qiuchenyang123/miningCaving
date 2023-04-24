@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="57px" viewBox="0 0 50 57" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>漂浮物</title>
+    <defs>
+        <polygon id="path-1" points="18 23.7348485 39.7142857 10 39.7142857 35.1805556 18 48.915404"></polygon>
+        <filter x="-39.1%" y="-16.7%" width="178.3%" height="143.7%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.295580736   0 0 0 0 0.0480722031   0 0 0 0 0.38714392  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <filter x="-43.7%" y="-19.3%" width="187.5%" height="148.8%" filterUnits="objectBoundingBox" id="filter-3">
+            <feGaussianBlur stdDeviation="3.5" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="0" dy="-2" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.812744115   0 0 0 0 0.901912677   0 0 0 0 0.985677083  0 0 0 0.574530118 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+        <polygon id="path-4" points="18.2857143 23.4457071 0 12 0 37.1805556 18.2857143 48.6262626"></polygon>
+        <filter x="-46.5%" y="-17.7%" width="193.0%" height="146.4%" filterUnits="objectBoundingBox" id="filter-5">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.236390521   0 0 0 0 0.0827608493   0 0 0 0 0.354485544  0 0 0 0.554177989 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <filter x="-62.9%" y="-25.9%" width="225.8%" height="162.8%" filterUnits="objectBoundingBox" id="filter-6">
+            <feGaussianBlur stdDeviation="5.5" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="0" dy="-2" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.812744115   0 0 0 0 0.851013758   0 0 0 0 0.985677083  0 0 0 0.598562047 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+        <polygon id="path-7" points="20.5714286 0 40 10.084596 18.2857143 23.8194444 0 12.3737374"></polygon>
+        <filter x="-13.8%" y="-23.1%" width="127.5%" height="146.2%" filterUnits="objectBoundingBox" id="filter-8">
+            <feGaussianBlur stdDeviation="4.5" in="SourceAlpha" result="shadowBlurInner1"></feGaussianBlur>
+            <feOffset dx="0" dy="2" in="shadowBlurInner1" result="shadowOffsetInner1"></feOffset>
+            <feComposite in="shadowOffsetInner1" in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowInnerInner1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.618218221   0 0 0 0 0.340701337   0 0 0 0 0.794217687  0 0 0 0.45739923 0" type="matrix" in="shadowInnerInner1"></feColorMatrix>
+        </filter>
+        <linearGradient x1="50%" y1="33.267008%" x2="36.2077985%" y2="65.4076344%" id="linearGradient-9">
+            <stop stop-color="#AC88FF" offset="0%"></stop>
+            <stop stop-color="#6D38EA" offset="9.94289423%"></stop>
+            <stop stop-color="#AD8CFF" offset="16.7698636%"></stop>
+            <stop stop-color="#AD9CDB" offset="26.5981529%"></stop>
+            <stop stop-color="#AE92FF" offset="44.0809801%"></stop>
+            <stop stop-color="#CDBDFF" offset="57.3648351%"></stop>
+            <stop stop-color="#5932EF" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-10">
+            <stop stop-color="#9777E3" offset="0%"></stop>
+            <stop stop-color="#492AC3" offset="100%"></stop>
+        </linearGradient>
+        <polygon id="path-11" points="3 13.3953488 23.5714286 2 35 7.69767442 14.4285714 20.5119334"></polygon>
+        <filter x="-26.6%" y="-35.1%" width="153.1%" height="191.8%" filterUnits="objectBoundingBox" id="filter-12">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.25259005   0 0 0 0 0   0 0 0 0 0.646630527  0 0 0 0.606487772 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.智慧水务-河道水质" transform="translate(-382.000000, -268.000000)" fill-rule="nonzero">
+            <g id="漂浮物" transform="translate(387.000000, 269.000000)">
+                <g id="Group-80">
+                    <g id="Path-18-Copy">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                        <use fill="#6843F7" xlink:href="#path-1"></use>
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-1"></use>
+                    </g>
+                    <g id="Path-19-Copy">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-5)" xlink:href="#path-4"></use>
+                        <use fill="#937DFD" xlink:href="#path-4"></use>
+                        <use fill="black" fill-opacity="1" filter="url(#filter-6)" xlink:href="#path-4"></use>
+                    </g>
+                    <g id="Path-20">
+                        <use fill="#C3B7FB" xlink:href="#path-7"></use>
+                        <use fill="black" fill-opacity="1" filter="url(#filter-8)" xlink:href="#path-7"></use>
+                    </g>
+                </g>
+                <polygon id="Path-21-Copy" fill="url(#linearGradient-9)" points="3 14.3953488 3 13.255814 23.5714286 3 35 7.55813953 35 8.69767442 14.4285714 21.5119334"></polygon>
+                <g id="Path-21">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-12)" xlink:href="#path-11"></use>
+                    <use fill="url(#linearGradient-10)" xlink:href="#path-11"></use>
+                </g>
+                <polygon id="Path-22-Copy" fill="#FFFFFF" points="10 15.2790698 13.9483817 13 15.7142857 14.1395349 11.6817801 16.4186047"></polygon>
+                <polygon id="Path-22-Copy-2" fill="#FFFFFF" points="16 11.2790698 19.9483817 9 21.7142857 10.1395349 17.6817801 12.4186047"></polygon>
+                <polygon id="Path-22-Copy-3" fill="#FFFFFF" points="21 8.27906977 24.9483817 6 26.7142857 7.13953488 22.6817801 9.41860465"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

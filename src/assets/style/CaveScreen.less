@@ -1,0 +1,34 @@
+.screen-layer-content-wrap {
+  width: 100%;
+  padding: 10px 16px 20px;
+  background: url("../images/CaveScreenDemo/video-bg.png") no-repeat center center / 100% 100%;
+  .screen-layer-sub-title {
+    position: relative;
+    height: 43px;
+    padding: 0 20px 0 0;
+    color: #fff;
+    font: 500 16px 'PingFangSC-Medium, PingFang SC';
+    &::before {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      border-bottom: 1px solid #00EAFD;
+      content: '';
+    }
+    &.river-water-quality-title {
+      background: url("../../assets/images/homeView/subTitle/river_water_quality_title.svg") no-repeat left center / 236px 40px;
+      &::before {
+        width: 276px;
+      }
+    }
+    .screen-layer-sub-title-time {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      font-size: 14px;
+      font-family: 'fz';
+      color: #fff;
+      transform: translateY(-50%);
+    }
+  }
+}
