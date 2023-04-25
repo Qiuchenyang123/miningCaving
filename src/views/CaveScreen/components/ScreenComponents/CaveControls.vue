@@ -5,47 +5,73 @@ import eventHub from '../../../../utils/eventHub'
 
 const form = reactive({
 	distance: 0,
-	organicMatterLayer: {
-		C0: 0,
-		C1: 0,
-		caving: false,
-		cavingD: 0,
-		cavingType: ''
-	},
-	leachedLayer: {
-		C0: 0,
-		C1: 0,
-		caving: false,
-		cavingD: 0,
-		cavingType: ''
-	},
-	depositionLayer: {
-		C0: 0,
-		C1: 0,
-		caving: false,
-		cavingD: 0,
-		cavingType: ''
-	},
-	weatheredLayer: {
-		C0: 0,
-		C1: 0,
-		caving: false,
-		cavingD: 0,
-		cavingType: ''
-	},
-	bedrockLayer: {
-		C0: 0,
-		C1: 0,
-		caving: false,
-		cavingD: 0,
-		cavingType: ''
+	cavingLayer: '',
+	solumMap: {
+		organicMatterLayer: {
+			C0: 0,
+			C1: 0,
+			caving: false,
+			cavingD: 0,
+			cavingType: ''
+		},
+		leachedLayer: {
+			C0: 0,
+			C1: 0,
+			caving: false,
+			cavingD: 0,
+			cavingType: ''
+		},
+		depositionLayer: {
+			C0: 0,
+			C1: 0,
+			caving: false,
+			cavingD: 0,
+			cavingType: ''
+		},
+		weatheredLayer: {
+			C0: 0,
+			C1: 0,
+			caving: false,
+			cavingD: 0,
+			cavingType: ''
+		},
+		bedrockLayer: {
+			C0: 0,
+			C1: 0,
+			caving: false,
+			cavingD: 0,
+			cavingType: ''
+		}
 	}
 })
+
+const cavingOptionsList = [
+	{
+		value: 'organicMatterLayer',
+		label: '有机层'
+	},
+	{
+		value: 'leachedLayer',
+		label: '淋溶层'
+	},
+	{
+		value: 'depositionLayer',
+		label: '淀积层'
+	},
+	{
+		value: 'weatheredLayer',
+		label: '风化层'
+	},
+	{
+		value: 'bedrockLayer',
+		label: '基岩层'
+	}
+]
 
 const activeTab = ref('organicMatterLayer')
 
 const handleClick = () => {
-	eventHub.emit('imitateCaving', { distance: form.distance, solumData: form[activeTab.value], activeKey: activeTab.value })
+	eventHub.emit('imitateCaving', { distance: form.distance, solumMap: form.solumMap, activeKey: form.cavingLayer })
 }
 
 const handleFold = () => {
@@ -72,16 +98,16 @@ const tabChange = (name) => {
 		<el-form :model="form" label-width="70px">
 			<template v-if="activeTab === 'organicMatterLayer'">
 				<el-form-item label="C0">
-					<el-input v-model="form.organicMatterLayer.C0" class="controls-form-input" />
+					<el-input v-model="form.solumMap.organicMatterLayer.C0" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="C1">
-					<el-input v-model="form.organicMatterLayer.C1" class="controls-form-input" />
+					<el-input v-model="form.solumMap.organicMatterLayer.C1" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="是否坍塌">
-					<el-switch v-model="form.organicMatterLayer.caving" active-text="坍塌" />
+					<el-switch v-model="form.solumMap.organicMatterLayer.caving" active-text="坍塌" />
 				</el-form-item>
 				<el-form-item label="坍塌方式">
-					<el-radio-group v-model="form.organicMatterLayer.cavingType" class="controls-form-radio">
+					<el-radio-group v-model="form.solumMap.organicMatterLayer.cavingType" class="controls-form-radio">
 						<el-radio label="laoding">牢顶</el-radio>
 						<el-radio label="luomao">帽落</el-radio>
 					</el-radio-group>
@@ -89,16 +115,16 @@ const tabChange = (name) => {
 			</template>
 			<template v-if="activeTab === 'leachedLayer'">
 				<el-form-item label="C0">
-					<el-input v-model="form.leachedLayer.C0" class="controls-form-input" />
+					<el-input v-model="form.solumMap.leachedLayer.C0" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="C1">
-					<el-input v-model="form.leachedLayer.C1" class="controls-form-input" />
+					<el-input v-model="form.solumMap.leachedLayer.C1" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="是否坍塌">
-					<el-switch v-model="form.leachedLayer.caving" active-text="坍塌" />
+					<el-switch v-model="form.solumMap.leachedLayer.caving" active-text="坍塌" />
 				</el-form-item>
 				<el-form-item label="坍塌方式">
-					<el-radio-group v-model="form.leachedLayer.cavingType" class="controls-form-radio">
+					<el-radio-group v-model="form.solumMap.leachedLayer.cavingType" class="controls-form-radio">
 						<el-radio label="laoding">牢顶</el-radio>
 						<el-radio label="luomao">帽落</el-radio>
 					</el-radio-group>
@@ -106,16 +132,16 @@ const tabChange = (name) => {
 			</template>
 			<template v-if="activeTab === 'depositionLayer'">
 				<el-form-item label="C0">
-					<el-input v-model="form.depositionLayer.C0" class="controls-form-input" />
+					<el-input v-model="form.solumMap.depositionLayer.C0" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="C1">
-					<el-input v-model="form.depositionLayer.C1" class="controls-form-input" />
+					<el-input v-model="form.solumMap.depositionLayer.C1" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="是否坍塌">
-					<el-switch v-model="form.depositionLayer.caving" active-text="坍塌" />
+					<el-switch v-model="form.solumMap.depositionLayer.caving" active-text="坍塌" />
 				</el-form-item>
 				<el-form-item label="坍塌方式">
-					<el-radio-group v-model="form.depositionLayer.cavingType" class="controls-form-radio">
+					<el-radio-group v-model="form.solumMap.depositionLayer.cavingType" class="controls-form-radio">
 						<el-radio label="laoding">牢顶</el-radio>
 						<el-radio label="luomao">帽落</el-radio>
 					</el-radio-group>
@@ -123,16 +149,16 @@ const tabChange = (name) => {
 			</template>
 			<template v-if="activeTab === 'weatheredLayer'">
 				<el-form-item label="C0">
-					<el-input v-model="form.weatheredLayer.C0" class="controls-form-input" />
+					<el-input v-model="form.solumMap.weatheredLayer.C0" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="C1">
-					<el-input v-model="form.weatheredLayer.C1" class="controls-form-input" />
+					<el-input v-model="form.solumMap.weatheredLayer.C1" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="是否坍塌">
-					<el-switch v-model="form.weatheredLayer.caving" active-text="坍塌" />
+					<el-switch v-model="form.solumMap.weatheredLayer.caving" active-text="坍塌" />
 				</el-form-item>
 				<el-form-item label="坍塌方式">
-					<el-radio-group v-model="form.weatheredLayer.cavingType" class="controls-form-radio">
+					<el-radio-group v-model="form.solumMap.weatheredLayer.cavingType" class="controls-form-radio">
 						<el-radio label="laoding">牢顶</el-radio>
 						<el-radio label="luomao">帽落</el-radio>
 					</el-radio-group>
@@ -140,21 +166,31 @@ const tabChange = (name) => {
 			</template>
 			<template v-if="activeTab === 'bedrockLayer'">
 				<el-form-item label="C0">
-					<el-input v-model="form.bedrockLayer.C0" class="controls-form-input" />
+					<el-input v-model="form.solumMap.bedrockLayer.C0" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="C1">
-					<el-input v-model="form.bedrockLayer.C1" class="controls-form-input" />
+					<el-input v-model="form.solumMap.bedrockLayer.C1" type="number" class="controls-form-input" />
 				</el-form-item>
 				<el-form-item label="是否坍塌">
-					<el-switch v-model="form.bedrockLayer.caving" active-text="坍塌" />
+					<el-switch v-model="form.solumMap.bedrockLayer.caving" active-text="坍塌" />
 				</el-form-item>
 				<el-form-item label="坍塌方式">
-					<el-radio-group v-model="form.bedrockLayer.cavingType" class="controls-form-radio">
+					<el-radio-group v-model="form.solumMap.bedrockLayer.cavingType" class="controls-form-radio">
 						<el-radio label="laoding">牢顶</el-radio>
 						<el-radio label="luomao">帽落</el-radio>
 					</el-radio-group>
 				</el-form-item>
 			</template>
+			<el-divider />
+			<el-form-item label="挖掘层">
+				<el-select v-model="form.cavingLayer" placeholder="请选择挖掘层" style="width: 100%;">
+					<el-option
+						v-for="item in cavingOptionsList"
+						:key="item.value"
+						:label="item.label"
+						:value="item.value"/>
+				</el-select>
+			</el-form-item>
 			<el-form-item label="挖掘距离">
 				<el-input v-model="form.distance" />
 				<el-slider v-model="form.distance" :step="10" show-stops />

@@ -30,6 +30,7 @@ onMounted(() => {
 				code: 'bedrockLayer',
 				name: '基岩层',
 				prev: 'weatheredLayer',
+				aboveList: ['weatheredLayer', 'depositionLayer', 'leachedLayer', 'organicMatterLayer'],
 				next: null,
 				height: 5,
 				offset: 3.4
@@ -38,6 +39,7 @@ onMounted(() => {
 				code: 'weatheredLayer',
 				name: '风化层',
 				prev: 'depositionLayer',
+				aboveList: ['depositionLayer', 'leachedLayer', 'organicMatterLayer'],
 				next: 'bedrockLayer',
 				height: 2.5,
 				offset: 3
@@ -46,6 +48,7 @@ onMounted(() => {
 		        code: 'depositionLayer',
 				name: '淀积层',
 				prev: 'leachedLayer',
+				aboveList: ['leachedLayer', 'organicMatterLayer'],
 				next: 'weatheredLayer',
 				height: 3.2,
 				offset: 3
@@ -54,6 +57,7 @@ onMounted(() => {
 				code: 'leachedLayer',
 				name: '淋溶层',
 				prev: 'organicMatterLayer',
+				aboveList: ['organicMatterLayer'],
 				next: 'depositionLayer',
 				height: 2.2,
 				offset: 3.5
@@ -62,6 +66,7 @@ onMounted(() => {
 				code: 'organicMatterLayer',
 				name: '有机层',
 				prev: null,
+				aboveList: [],
 				next: 'leachedLayer',
 				height: 3.4,
 				offset: 3
