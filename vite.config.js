@@ -5,6 +5,8 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+	// publicPath: './',
+	// publicDir: './',
 	plugins: [vue()],
 	resolve: {
 		alias: {
@@ -19,5 +21,8 @@ export default defineConfig({
 				// additionalData: '@import "./src/assets/css/theme.less";'
 			}
 		}
+	},
+	server: {
+		port: 23333
 	}
 })

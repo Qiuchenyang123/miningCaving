@@ -1,7 +1,12 @@
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import eventHub from '../../../../utils/eventHub'
 import CaveThreeControl from '../../../../three/CaveThreeControl'
+import { useCaveLayerStore } from '../../../../stores/caveLayer'
+
+const caveLayerStore = useCaveLayerStore()
+
+const layerList = computed(() => caveLayerStore.caveData.caveLayerList)
 
 let caveThreeControl
 
@@ -21,58 +26,16 @@ eventHub.on('backHome', () => {
 	caveThreeControl.backHome()
 })
 
+eventHub.on('setLayers', () => {
+	// caveThreeControl.setLayers(layers)
+})
+
 onMounted(() => {
 	caveThreeControl = new CaveThreeControl({
 		container: 'main-three-container',
 		id: 'three-main-canvas',
-		layers: [ // 3.4, 3, 3, 3.5, 3
-			{
-				code: 'bedrockLayer',
-				name: '基岩层',
-				prev: 'weatheredLayer',
-				aboveList: ['weatheredLayer', 'depositionLayer', 'leachedLayer', 'organicMatterLayer'],
-				next: null,
-				height: 5,
-				offset: 3.4
-			},
-			{
-				code: 'weatheredLayer',
-				name: '风化层',
-				prev: 'depositionLayer',
-				aboveList: ['depositionLayer', 'leachedLayer', 'organicMatterLayer'],
-				next: 'bedrockLayer',
-				height: 2.5,
-				offset: 3
-			},
-			{
-		        code: 'depositionLayer',
-				name: '淀积层',
-				prev: 'leachedLayer',
-				aboveList: ['leachedLayer', 'organicMatterLayer'],
-				next: 'weatheredLayer',
-				height: 3.2,
-				offset: 3
-			},
-			{
-				code: 'leachedLayer',
-				name: '淋溶层',
-				prev: 'organicMatterLayer',
-				aboveList: ['organicMatterLayer'],
-				next: 'depositionLayer',
-				height: 2.2,
-				offset: 3.5
-			},
-			{
-				code: 'organicMatterLayer',
-				name: '有机层',
-				prev: null,
-				aboveList: [],
-				next: 'leachedLayer',
-				height: 3.4,
-				offset: 3
-			}
-		], // 3.4, 2.2, 4.2, 1.6, 1.5, 5
-		maxWidth: 100
+		layers: layerList.value, // 3.4, 2.2, 4.2, 1.6, 1.5, 5
+		maxWidth: 500
 	})
 	document.getElementById('main-three-container').appendChild(caveThreeControl.$renderer.domElement)
 })

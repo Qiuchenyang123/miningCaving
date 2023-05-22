@@ -7,11 +7,22 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import eventHub from '../utils/eventHub'
 import * as THREE from 'three'
 import Tooltip3D from 'ly_three/packages/mesh/Tooltip3D/Tooltip3D'
+import { useCaveLayerStore } from '../stores/caveLayer'
+
+let caveLayerStore
 
 class CaveThreeControl {
 	constructor(options) {
 		this.$options = options
 		this.initial()
+		eventHub.on('initLayers', (layers) => {
+			this.$options.layers = layers
+			this.showDetail()
+		})
+		eventHub.on('setLayers', (layers) => {
+			this.$options.layers = layers
+		})
+		caveLayerStore = useCaveLayerStore()
 	}
 	initial() {
 		const container = document.getElementById(this.$options.container)
@@ -33,12 +44,13 @@ class CaveThreeControl {
 		this.$canvas = canvas
 		this.$renderer = renderer
 
-		this.$camera.position.set(-0, 40, 100)
+		this.$camera.position.set(-0, 240, 300)
 
 		this.once = true
 		this.group = new LyGroup()
 		this.detailGroup = new LyGroup()
 		this.cavingGroup = new LyGroup()
+		this.cavingHoleGroup = new LyGroup()
 		this.data = {
 			modelList: []
 		}
@@ -49,6 +61,7 @@ class CaveThreeControl {
 		scene.add(this.group)
 		scene.add(this.detailGroup)
 		scene.add(this.cavingGroup)
+		scene.add(this.cavingHoleGroup)
 
 		// 添加坐标辅助
 		Source.Source.addAxesHelper({ scene })
@@ -58,17 +71,17 @@ class CaveThreeControl {
 		const light = new THREE.AmbientLight(0xffffff, 1)
 		// light.position.set( 30, 30, 30 );
 		scene.add(light)
-		const textureLoader = new THREE.TextureLoader()
-		const grassMap = textureLoader.load('http://minio.lingyizhilian.top:20005/threemodel/textures/ground.jpg')
+		/* const textureLoader = new THREE.TextureLoader()
+		const grassMap = textureLoader.load('http://182.92.151.43:20000/three/textures/ground.jpg')
 		const mtlLoader = new MTLLoader()
 		const objLoader = new OBJLoader()
-		mtlLoader.load('http://minio.lingyizhilian.top:20005/threemodel/OBJ/rocale/005.mtl', material => {
+		mtlLoader.load('http://182.92.151.43:20000/three/OBJ/rocale/005.mtl', material => {
 			// mtlLoader.load('./geology/models/005.mtl', material => {
 			material.preload()
 			material.materials['wire_088144225'].map = grassMap
 			material.materials['wire_088144225'].color = new THREE.Color('#fff')
 			objLoader.setMaterials(material)
-			objLoader.loadAsync('http://minio.lingyizhilian.top:20005/threemodel/OBJ/rocale/005.obj')
+			objLoader.loadAsync('http://182.92.151.43:20000/three/OBJ/rocale/005.obj')
 				// objLoader.loadAsync( './geology/models/005.obj')
 				.then(group => {
 					const scene = group
@@ -77,10 +90,10 @@ class CaveThreeControl {
 					// group.quaternion.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 4)
 					this.group.add(scene)
 				})
-		})
+		})*/
 
 		const fbxLoader = new GLTFLoader()
-		fbxLoader.load('./stone/stone_normal/stone2.glb', object => {
+		fbxLoader.load('http://182.92.151.43:20000/three/glb/stone_lightblack.glb', object => {
 			const { scene } = object
 			// scene.scale.set(50, 50, 50)
 			this.stone = scene
@@ -93,7 +106,7 @@ class CaveThreeControl {
 				}
 			})*/
 		})
-		this.raycaster = new THREE.Raycaster()
+		/* this.raycaster = new THREE.Raycaster()
 		const mouse = new THREE.Vector2()// 创建二维平面
 		let time
 		const handleClick = (e) => {
@@ -118,7 +131,7 @@ class CaveThreeControl {
 		}
 
 		document.getElementById('main-three-container').addEventListener('click', handleClick)
-		document.getElementById('main-three-container').addEventListener('mousedown', handleMouseDown)
+		document.getElementById('main-three-container').addEventListener('mousedown', handleMouseDown)*/
 		this.textures = []
 		this.textLoader = new THREE.TextureLoader()
 		for (let i = 1; i < 9; i++) {
@@ -126,11 +139,12 @@ class CaveThreeControl {
 			this.textures.push(map)
 			this.originalTexturesMap[`granites_0${i}`] = map
 		}
-		this.luomaoTexture = this.textLoader.load('http://minio.lingyizhilian.top:20005/threemodel/textures/pebbles_37.jpg')
-		this.luomaoTexture.wrapS = THREE.RepeatWrapping
-		this.luomaoTexture.wrapT = THREE.RepeatWrapping
+		// this.luomaoTexture = this.textLoader.load('http://182.92.151.43:20000/three/textures/pebbles_37.jpg')
+		// this.luomaoTexture.wrapS = THREE.RepeatWrapping
+		// this.luomaoTexture.wrapT = THREE.RepeatWrapping
 
 		this.tooltipControl = new Tooltip3D(this.$scene)
+		// this.showDetail()
 	}
 	showDetail() {
 		eventHub.emit('showDetail')
@@ -138,17 +152,19 @@ class CaveThreeControl {
 		this.group.visible = false
 		this.detailGroup.visible = true
 		this.cavingGroup.visible = true
+		this.cavingHoleGroup.visible = true
 		if (this.once) {
-			const layers = this.$options.layers
+			const layers = this.$options.layers.slice(0).reverse()
+			console.log('layers', layers)
 			const textures = this.textures
 			let currentHeight = 0
 			this.texturesMap = {}
 			const maxWidth = this.$options.maxWidth
-			const layerOffset = [3.4, 3, 3, 3.5, 3]
+			const layerOffset = [3, 3, 3, 3, 3, 3, 3, 3]
 			for (let i = 0; i < layers.length; i++) {
 				const layer = layers[i]
 				const mesh = this.addGround({
-					width: maxWidth, height: layer.height, depth: 30, texture: textures[i],
+					width: maxWidth, height: layer.height, depth: layer.width, texture: textures[i],
 					position: { x: 0, y: currentHeight, z: 0 }
 				})
 				this.texturesMap[layer.code] = textures[i]
@@ -161,13 +177,14 @@ class CaveThreeControl {
 				this.addTooltip3D(cloneMesh, layer)
 
 				if (i === 0) {
+					this.cavingHoleGroup.clear()
 					this.addCaveHole({
-						width: 120, height: layer.height - 0.2, depth: layer.height, color: 'rgb(186,184,185)',
-						position: { x: 20, y: currentHeight + 0.1, z: 6 }
+						width: maxWidth + 0.1, height: layer.height - 0.2, depth: layer.height, color: 'rgb(186,184,185)',
+						position: { x: 0, y: currentHeight + 0.1, z: 20 }
 					})
 					this.addCaveHole({
-						width: 120, height: layer.height - 0.2, depth: layer.height, color: 'rgb(186,184,185)',
-						position: { x: 20, y: currentHeight + 0.1, z: -6 }
+						width: maxWidth + 0.1, height: layer.height - 0.2, depth: layer.height, color: 'rgb(186,184,185)',
+						position: { x: 0, y: currentHeight + 0.1, z: -20 }
 					})
 				} else {
 					this.rentLayerMap[`granites_0${i + 1}`] = mesh
@@ -180,10 +197,10 @@ class CaveThreeControl {
 	addTooltip3D(target, layerData) {
 		const options = {
 			element: `
-                        <div class="elementContent">
-                            <h3>${layerData.name}</h3>
-                        </div>
-                    `,
+				<div class="elementContent">
+					<h3>${layerData.groundLayer}</h3>
+				</div>
+			`,
 			parentClass: [],
 			eventActive: true,
 			eventType: 'click',
@@ -216,26 +233,37 @@ class CaveThreeControl {
 		})
 		const mesh = new THREE.Mesh(geometry, material)
 		mesh.position.set(position.x, position.y + height / 2, position.z)
-		this.detailGroup.visible && this.detailGroup.add(mesh)
+		this.cavingHoleGroup.visible && this.cavingHoleGroup.add(mesh)
 	}
-	imitateCaving(data) {
+	imitateCaving() {
+		const data = caveLayerStore.caveData
 		this.group.visible = false
 		this.detailGroup.visible = true
 		this.cavingGroup.visible = true
 		this.cavingGroup.clear()
-		const { distance, solumMap, activeKey } = data
+		const activeKey = '42_16cm'
+		const { distance, caveLayerList } = data
 		const hollowLayer = this.detailGroup.findByCode(activeKey)
 		const { layerProperty, position } = hollowLayer
 		const maxWidth = this.$options.maxWidth
-		const textures = this.textures
 		// 挖空distance
-		this.addEmptyLineSpace({ width: distance, height: layerProperty.height, depth: 30, position: { x: position.x + (maxWidth - distance) / 2, y: position.y, z: position.z }})
-		this.addRestSolumLayer({ width: maxWidth - distance, height: layerProperty.height, depth: 30, position: { x: position.x - distance / 2, y: position.y, z: position.z }, activeKey })
+		this.addEmptyLineSpace({ width: distance, height: layerProperty.height, depth: layerProperty.width, position: { x: position.x + (maxWidth - distance) / 2, y: position.y, z: position.z }})
+		this.addRestSolumLayer({ width: maxWidth - distance, height: layerProperty.height, depth: layerProperty.width, position: { x: position.x - distance / 2, y: position.y, z: position.z }, activeKey, cer: layerProperty.cer })
+		this.cavingHoleGroup.clear()
+		this.addCaveHole({
+			width: maxWidth - distance + 0.1, height: layerProperty.height - 0.2, depth: layerProperty.height, color: 'rgb(186,184,185)',
+			position: { x: 0, y: position.y + 0.1, z: 20 }
+		})
+		this.addCaveHole({
+			width: maxWidth - distance + 0.1, height: layerProperty.height - 0.2, depth: layerProperty.height, color: 'rgb(186,184,185)',
+			position: { x: position.x - distance / 2, y: position.y + 0.1, z: -20 }
+		})
 
 		hollowLayer.visible = false
+		let currentHeight = 0
 		// 坍塌
 		layerProperty.aboveList.forEach(key => {
-			const solumData = solumMap[key]
+			const solumData = caveLayerList.find(item => item.code === key)
 			const layer = this.detailGroup.findByCode(key)
 			const { layerProperty, position } = layer
 			if (solumData.caving) {
@@ -256,18 +284,21 @@ class CaveThreeControl {
 						}
 					}
 					this.addCavingGround_laoding({
-						blockList, height: layerProperty.height, depth: 30, texture: this.texturesMap[layerProperty.code],
+						blockList, height: layerProperty.height, depth: layerProperty.width, texture: this.texturesMap[layerProperty.code],
 						position: { x: 0, y: position.y, z: 0 },
 						solumData
 					})
-					this.addRestSolumLayer({ width: maxWidth - currentWidth, height: layerProperty.height, depth: 30, position: { x: position.x - currentWidth / 2, y: position.y, z: position.z }, activeKey: layerProperty.code })
+					this.addRestSolumLayer({ width: maxWidth - currentWidth, height: layerProperty.height, depth: layerProperty.width, position: { x: position.x - currentWidth / 2, y: position.y, z: position.z }, activeKey: layerProperty.code })
 				} else {
-					this.addRestSolumLayer({ width: maxWidth - distance, height: layerProperty.height, depth: 30, position: { x: position.x - distance / 2, y: position.y, z: position.z }, activeKey: layerProperty.code })
-					this.addEmptyLineSpace({ width: Number(distance), height: layerProperty.height, depth: 30, position: { x: position.x + (maxWidth - distance) / 2, y: position.y, z: position.z }})
+					const cerHeight = layerProperty.height * layerProperty.cer
+					this.addRestSolumLayer({ width: maxWidth - distance, height: layerProperty.height, depth: layerProperty.width, position: { x: position.x - distance / 2, y: position.y, z: position.z }, activeKey: layerProperty.code })
+					this.addEmptyLineSpace({ width: Number(distance), height: layerProperty.height, depth: layerProperty.width, position: { x: position.x + (maxWidth - distance) / 2, y: position.y, z: position.z }})
 					this.addCavingGround_luomao({
-						width: Number(distance), height: layerProperty.height, depth: 30,
-						position: { x: position.x + (maxWidth - distance) / 2, y: position.y, z: position.z }
+						width: Number(distance), height: cerHeight, depth: layerProperty.width,
+						position: { x: position.x + (maxWidth - distance) / 2, y: currentHeight + cerHeight / 2, z: position.z },
+						top: position.y + layerProperty.height / 2
 					})
+					currentHeight += cerHeight
 				}
 				layer.visible = false
 			} else {
@@ -291,18 +322,19 @@ class CaveThreeControl {
 		restMesh.position.copy(position)
 		this.cavingGroup.visible && this.cavingGroup.add(restMesh)
 	}
-	addCavingGround_laoding({ blockList, height, depth, texture, position }) {
+	addCavingGround_laoding({ blockList, height, depth, texture, position, solumData }) {
 		let currentWidth = 0
 		const maxWidth = this.$options.maxWidth
-		const depthOffset = [-depth / 1.5 / 2, 0, depth / 1.5 / 2]
-		const rotationList = [0.1, 0, -0.1]
-		const positionOffset = [0, -0.4, 0]
+		const depthOffset = [-(solumData.e / 2 + solumData.d / 2), 0, (solumData.e / 2 + solumData.d / 2)]
+		const depthList = [solumData.d, solumData.e, solumData.d]
+		const rotationList = [solumData.dr, 0, -solumData.dr]
+		const positionOffset = [-solumData.offsetHeight1, -solumData.offsetHeight2, -solumData.offsetHeight3]
 		for (let j = 0; j < blockList.length; j++) {
 			const width = blockList[j]
 			currentWidth += width
 			const currentWidthOffset = maxWidth / 2 - currentWidth + width / 2
 			for (let i = 0; i < 3; i++) {
-				const geometry = new THREE.BoxGeometry(width, height, depth / 3)
+				const geometry = new THREE.BoxGeometry(width, height, depthList[i])
 				const material = new THREE.MeshBasicMaterial({
 					map: texture
 					// color: '#1b9cc4'
@@ -322,22 +354,37 @@ class CaveThreeControl {
 	}
 	addCavingGround_luomao(params) {
 		const maxWidth = this.$options.maxWidth
-		const { width, height, depth, position } = params
+		const { width, height, depth, position, top } = params
 		// 加石块
 		const { max, min } = this.stone.children[0].geometry.boundingBox
-		const scale = 15
-		const yD = (max.y - min.y) * scale
-		const xD = (max.x - min.x) * scale
-		const zD = (max.z - min.z) * scale
-		const loopY = Math.floor(height / yD)
-		const loopX = Math.floor(width / xD)
-		const loopZ = Math.floor(depth / zD)
+		let scale = 8
+		let yD
+		let xD
+		let zD
+		let loopY
+		let loopX
+		let loopZ
+		while (true) {
+			yD = (max.y - min.y) * scale
+			xD = (max.x - min.x) * scale
+			zD = (max.z - min.z) * scale
+			loopY = Math.floor(height / yD)
+			loopX = Math.floor(width / xD)
+			loopZ = Math.floor(depth / zD)
+			if (loopY * loopX * loopZ) {
+				break
+			}
+			scale /= 2
+		}
+
 		for (let i = 0; i < loopY; i++) {
 			for (let j = 1; j < loopX; j++) {
 				for (let k = 0; k < loopZ; k++) {
 					this.addStone({
 						scale,
 						min: maxWidth / 2 - width,
+						top,
+						depth,
 						position: {
 							y: position.y + (i - Math.floor(loopY / 2)) * (yD) * 1.1,
 							x: position.x + (j - Math.floor(loopX / 2)) * (xD) * 1.1,
@@ -348,16 +395,25 @@ class CaveThreeControl {
 			}
 		}
 	}
-	addStone({ scale, position, min }) {
+	addStone({ scale, position, min, top, depth }) {
 		// console.log(327, this.containerGeometry)
 		// const container = this.cavingContainer
 		// const { max, min } = container.geometry.boundingBox
 		const maxWidth = this.$options.maxWidth
 		if (position.x > maxWidth / 2 || position.x < min) return false
-		const mesh = this.stone.clone()
+		let mesh = this.stone.clone()
 		mesh.scale.set(scale, scale, scale)
 		mesh.position.set(position.x + (Math.random() - 0.5) * 0.5, position.y + (Math.random() - 0.5) * 0.5, position.z + (Math.random() - 0.5) * 0.5)
 		mesh.rotation.set((Math.random() - 0.5) * 0.1, position.y + (Math.random() - 0.5) * 0.1, position.z + (Math.random() - 0.5) * 0.1)
+		const boundingBox = mesh.children[0].geometry.boundingBox
+		const stoneMax = boundingBox.max
+		const stoneMin = boundingBox.min
+		const stoneHeight = stoneMax.y - stoneMin.y
+		const stoneWidth = stoneMax.z - stoneMin.z
+		if (((mesh.position.y + stoneHeight / 2) > top || (mesh.position.y - stoneHeight / 2) < 0) || ((mesh.position.z + stoneWidth / 2) > depth / 2 || (mesh.position.z + stoneWidth / 2) < -depth / 2)) {
+			mesh = null
+			return false
+		}
 		this.cavingGroup.add(mesh)
 	}
 	startCaving(distance, level) {

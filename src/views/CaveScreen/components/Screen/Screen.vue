@@ -1,10 +1,10 @@
 <script setup>
 import ScreenHeader from '../ScreenComponents/ScreenHeader.vue'
-import MenuBtn from '../ScreenComponents/MenuBtn.vue'
+import CaveCenterControls from '../ScreenComponents/CaveCenterControls.vue'
+// import MenuBtn from '../ScreenComponents/MenuBtn.vue'
 // import ScreenLeftLayer from '../ScreenComponents/ScreenLeftLayer.vue'
 // import ScreenRightLayer from '../ScreenComponents/ScreenRightLayer.vue'
-import CaveControls from '../ScreenComponents/CaveControls.vue'
-import { Expand } from '@element-plus/icons-vue'
+import CaveControlsMng from '../ScreenComponents/CaveControlsMng.vue'
 import eventHub from '../../../../utils/eventHub'
 import { reactive } from 'vue'
 
@@ -19,10 +19,6 @@ eventHub.on('showCavingControl', () => {
 eventHub.on('hideCavingControl', () => {
 	data.controlsVisible = false
 })
-
-const handleExpand = () => {
-	data.controlsVisible = true
-}
 /* eventHub.on('showDetail', () => {
 	data.leftLayerVisible = false
 	data.rightLayerVisible = false
@@ -37,21 +33,19 @@ eventHub.on('backHome', () => {
 <template>
 	<div class="screen-wrap">
 		<ScreenHeader />
-		<Transition name="slide" mode="out-in">
-			<CaveControls v-if="data.controlsVisible" />
-			<div v-else class="collapse-btn" @click="handleExpand"><el-icon :size="20"><Expand /></el-icon></div>
-		</Transition>
+		<CaveControlsMng />
 		<!--<div v-show="!data.controlsVisible" class="collapse-btn" @click="handleExpand"><el-icon><Expand /></el-icon></div>-->
 		<!--<Transition name="slideRight" mode="out-in">
 			<ScreenRightLayer v-if="data.rightLayerVisible" />
 		</Transition>-->
-		<!--<CaveControls />-->
-		<MenuBtn />
+		<CaveCenterControls />
+		<!--<MenuBtn />-->
 	</div>
 </template>
 
 <style scoped lang="less">
 .screen-wrap {
+    z-index: 999;
     overflow: hidden;
     position: absolute;
     left: 0;
@@ -59,13 +53,6 @@ eventHub.on('backHome', () => {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    .collapse-btn {
-        pointer-events: auto;
-        color: #fff;
-        &:hover {
-            color: #0299e8;
-        }
-    }
 }
 .slide-enter-active,
 .slide-leave-active {
