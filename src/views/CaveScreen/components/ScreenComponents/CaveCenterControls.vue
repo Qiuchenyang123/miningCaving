@@ -42,7 +42,7 @@ const handleClick = () => {
     bottom: 10px;
     pointer-events: auto;
     width: 800px;
-    height: fit-content;
+    height: auto;
     padding: 14px 14px 0;
     background-color: rgba(255, 255, 255, 1);
     border-radius: 5px;

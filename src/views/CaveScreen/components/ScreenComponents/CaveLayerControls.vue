@@ -39,7 +39,7 @@ const nextStep = () => {
 }
 
 const updateSetting = () => {
-	eventHub.emit('setLayer', form.layerList)
+	eventHub.emit('setLayers', form.layerList)
 }
 onMounted(() => {
 	eventHub.emit('initLayers', form.layerList)

@@ -8,6 +8,7 @@ import eventHub from '../utils/eventHub'
 import * as THREE from 'three'
 import Tooltip3D from 'ly_three/packages/mesh/Tooltip3D/Tooltip3D'
 import { useCaveLayerStore } from '../stores/caveLayer'
+import CAPS from './CAPS'
 
 let caveLayerStore
 
@@ -144,6 +145,8 @@ class CaveThreeControl {
 		// this.luomaoTexture.wrapT = THREE.RepeatWrapping
 
 		this.tooltipControl = new Tooltip3D(this.$scene)
+		this.cavingLayerTooltipControl = new Tooltip3D(this.$scene)
+		this.cavingLayerTooltipCodeList = []
 		// this.showDetail()
 	}
 	showDetail() {
@@ -155,7 +158,6 @@ class CaveThreeControl {
 		this.cavingHoleGroup.visible = true
 		if (this.once) {
 			const layers = this.$options.layers.slice(0).reverse()
-			console.log('layers', layers)
 			const textures = this.textures
 			let currentHeight = 0
 			this.texturesMap = {}
@@ -211,6 +213,66 @@ class CaveThreeControl {
 		}
 		this.tooltipControl.createTag(target, options)
 	}
+	addCavingLayerTooltip3D(target, layerData, type) {
+		const rotateMap = {
+			'35_fsy': true,
+			'36_xsy': false,
+			'37_ny': true,
+			'38_xsy': false,
+			'39_fsy': true,
+			'40_xsy': false,
+			'41_zsy': true
+		}
+		const options = {
+			element: type === 'laoding' ? `
+				<div class="elementContent" style="transform: rotateY(${rotateMap[layerData.code] ? 0 : '180deg'})">
+					<h3>
+						岩层：${layerData.groundLayer}；
+						岩层宽度：${layerData.width}；
+						岩层高度：${layerData.height}；
+						C0：
+						${layerData.C0}；
+						C1：
+						${layerData.C1}；
+						碎胀率：
+						${layerData.cer}；
+						倾斜度：
+						${layerData.dr}；
+						d：
+						${layerData.d}；
+						e：
+						${layerData.e}；
+						偏移高度[${layerData.offsetHeight1},${layerData.offsetHeight2},${layerData.offsetHeight3}]；
+					</h3>
+				</div>
+			` : `
+			<div class="elementContent" style="transform: rotateY(${rotateMap[layerData.code] ? 0 : '180deg'})">
+					<h3>
+						岩层：${layerData.groundLayer}；
+						岩层宽度：${layerData.width}；
+						原来高度：${layerData.height}；
+						碎胀率：
+						${layerData.cer}；
+						当前高度：
+						${layerData.cer * layerData.height}
+					</h3>
+				</div>
+			`,
+			parentClass: [],
+			eventActive: true,
+			eventType: 'click',
+			code: layerData.code,
+			eventCallback: () => {
+				// tooltipControl.removeTagByCode('test_123')
+			}
+		}
+		const tooltip = this.cavingLayerTooltipControl.createTag(target, options)
+		tooltip.rotateY(rotateMap[layerData.code] ? Math.PI / 2 : (-Math.PI / 2))
+		this.cavingLayerTooltipCodeList.push(layerData.code)
+	}
+	clearCavingLayerTooltip() {
+		this.cavingLayerTooltipControl.group.clear()
+	}
 	backHome() {
 		this.group.visible = true
 		this.detailGroup.visible = false
@@ -258,7 +320,7 @@ class CaveThreeControl {
 			width: maxWidth - distance + 0.1, height: layerProperty.height - 0.2, depth: layerProperty.height, color: 'rgb(186,184,185)',
 			position: { x: position.x - distance / 2, y: position.y + 0.1, z: -20 }
 		})
-
+		this.clearCavingLayerTooltip()
 		hollowLayer.visible = false
 		let currentHeight = 0
 		// 坍塌
@@ -286,17 +348,19 @@ class CaveThreeControl {
 					this.addCavingGround_laoding({
 						blockList, height: layerProperty.height, depth: layerProperty.width, texture: this.texturesMap[layerProperty.code],
 						position: { x: 0, y: position.y, z: 0 },
-						solumData
+						solumData,
+						distance
 					})
 					this.addRestSolumLayer({ width: maxWidth - currentWidth, height: layerProperty.height, depth: layerProperty.width, position: { x: position.x - currentWidth / 2, y: position.y, z: position.z }, activeKey: layerProperty.code })
 				} else {
 					const cerHeight = layerProperty.height * layerProperty.cer
 					this.addRestSolumLayer({ width: maxWidth - distance, height: layerProperty.height, depth: layerProperty.width, position: { x: position.x - distance / 2, y: position.y, z: position.z }, activeKey: layerProperty.code })
 					this.addEmptyLineSpace({ width: Number(distance), height: layerProperty.height, depth: layerProperty.width, position: { x: position.x + (maxWidth - distance) / 2, y: position.y, z: position.z }})
-					this.addCavingGround_luomao({
+					this.addCavingGround_maoluo({
 						width: Number(distance), height: cerHeight, depth: layerProperty.width,
 						position: { x: position.x + (maxWidth - distance) / 2, y: currentHeight + cerHeight / 2, z: position.z },
-						top: position.y + layerProperty.height / 2
+						top: position.y + layerProperty.height / 2,
+						solumData
 					})
 					currentHeight += cerHeight
 				}
@@ -305,6 +369,7 @@ class CaveThreeControl {
 				layer.visible = true
 			}
 		})
+		// this.simulation = new CAPS.Simulation({ scene: this.$scene, camera: this.$camera, canvas: this.$canvas, renderer: this.$renderer, control: this.control, group: this.detailGroup })
 	}
 	addEmptyLineSpace({ width, height, depth, position }) {
 		const emptyGeometry = new THREE.BoxGeometry(width, height, depth)
@@ -322,18 +387,38 @@ class CaveThreeControl {
 		restMesh.position.copy(position)
 		this.cavingGroup.visible && this.cavingGroup.add(restMesh)
 	}
-	addCavingGround_laoding({ blockList, height, depth, texture, position, solumData }) {
+	addCavingGround_laoding({ blockList, height, depth, texture, position, solumData, distance }) {
 		let currentWidth = 0
 		const maxWidth = this.$options.maxWidth
-		const depthOffset = [-(solumData.e / 2 + solumData.d / 2), 0, (solumData.e / 2 + solumData.d / 2)]
-		const depthList = [solumData.d, solumData.e, solumData.d]
+		const depthOffset = [-(solumData.e / 2 + solumData.d / 2), solumData.e / 4, (solumData.e / 2 + solumData.d / 2)]
+		const depthList = [solumData.d, solumData.e / 2, solumData.d]
 		const rotationList = [solumData.dr, 0, -solumData.dr]
 		const positionOffset = [-solumData.offsetHeight1, -solumData.offsetHeight2, -solumData.offsetHeight3]
+		const layerOffsetMap = {
+			'35_fsy': 0.7,
+			'36_xsy': 2,
+			'37_ny': 2,
+			'38_xsy': 3,
+			'39_fsy': 2,
+			'40_xsy': 3,
+			'41_zsy': 4
+		}
+		const zMap = {
+			'35_fsy': solumData.width - 6,
+			'36_xsy': -solumData.width + 6,
+			'37_ny': solumData.width - 6,
+			'38_xsy': -solumData.width + 6,
+			'39_fsy': solumData.width - 6,
+			'40_xsy': -solumData.width + 6,
+			'41_zsy': solumData.width - 6
+		}
+		const cloneMesh = { position: new THREE.Vector3(maxWidth / 2 - distance / 2, position.y - layerOffsetMap[solumData.code] - solumData.offsetHeight1, zMap[solumData.code]), scale: new THREE.Vector3(15, 15, 15) }
+		this.addCavingLayerTooltip3D(cloneMesh, solumData, 'laoding')
 		for (let j = 0; j < blockList.length; j++) {
 			const width = blockList[j]
 			currentWidth += width
 			const currentWidthOffset = maxWidth / 2 - currentWidth + width / 2
-			for (let i = 0; i < 3; i++) {
+			for (let i = 1; i < 3; i++) {
 				const geometry = new THREE.BoxGeometry(width, height, depthList[i])
 				const material = new THREE.MeshBasicMaterial({
 					map: texture
@@ -352,9 +437,30 @@ class CaveThreeControl {
 			}
 		}
 	}
-	addCavingGround_luomao(params) {
+	addCavingGround_maoluo(params) {
 		const maxWidth = this.$options.maxWidth
-		const { width, height, depth, position, top } = params
+		const { width, height, depth, position, top, solumData } = params
+		// 加3d tooltip
+		const layerOffsetMap = {
+			'35_fsy': 1,
+			'36_xsy': 2,
+			'37_ny': 2,
+			'38_xsy': 3,
+			'39_fsy': 3,
+			'40_xsy': 4,
+			'41_zsy': 4
+		}
+		const zMap = {
+			'35_fsy': solumData.width - 20,
+			'320_xsy': -solumData.width + 20,
+			'37_ny': solumData.width - 20,
+			'38_xsy': -solumData.width + 20,
+			'39_fsy': solumData.width - 20,
+			'40_xsy': -solumData.width + 20,
+			'41_zsy': solumData.width - 20
+		}
+		const cloneMesh = { position: new THREE.Vector3(maxWidth / 2 - width / 2, position.y - layerOffsetMap[solumData.code], zMap[solumData.code]), scale: new THREE.Vector3(15, 15, 15), rotation: new THREE.Vector3(1, 0, 0) }
+		this.addCavingLayerTooltip3D(cloneMesh, solumData, 'maoluo')
 		// 加石块
 		const { max, min } = this.stone.children[0].geometry.boundingBox
 		let scale = 8
@@ -400,7 +506,7 @@ class CaveThreeControl {
 		// const container = this.cavingContainer
 		// const { max, min } = container.geometry.boundingBox
 		const maxWidth = this.$options.maxWidth
-		if (position.x > maxWidth / 2 || position.x < min) return false
+		if (position.x > maxWidth / 2 || position.x < min || position.z < 0) return false
 		let mesh = this.stone.clone()
 		mesh.scale.set(scale, scale, scale)
 		mesh.position.set(position.x + (Math.random() - 0.5) * 0.5, position.y + (Math.random() - 0.5) * 0.5, position.z + (Math.random() - 0.5) * 0.5)

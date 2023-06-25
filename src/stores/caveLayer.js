@@ -49,7 +49,7 @@ export const useCaveLayerStore = defineStore('caveLayer', () => {
 			{
 				code: '37_ny',
 				groupKey: '',
-				height: 0,
+				height: 0.4,
 				width: 100,
 				C0: 5,
 				C1: 4,
